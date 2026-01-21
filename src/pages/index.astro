@@ -1,0 +1,203 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { prisma } from '@/lib/prisma'
+
+let stats = {
+  userCount: 0,
+  postCount: 0,
+  publishedCount: 0
+}
+
+try {
+  const [userCount, postCount, publishedCount] = await Promise.all([
+    prisma.user.count(),
+    prisma.post.count(),
+    prisma.post.count({ where: { published: true } })
+  ])
+  stats = { userCount, postCount, publishedCount }
+} catch (err) {
+  console.error('Stats error:', err)
+}
+---
+
+<Layout title="ホーム - Astro + Prisma">
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <!-- ウェルカムセクション -->
+    <div class="mb-12 text-center">
+      <h1 class="mb-4 text-4xl font-bold text-gray-900">Astro + Prisma + PostgreSQL</h1>
+      <p class="mb-2 text-xl text-gray-600">ユーザーと投稿を管理するデモアプリケーション</p>
+      <p class="text-gray-500">上部のナビゲーションから各ページに移動できます</p>
+    </div>
+
+    <!-- 統計カード -->
+    <div class="mb-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div class="rounded-lg border-t-4 border-blue-500 bg-white p-6 shadow-md">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="mb-1 text-sm font-medium text-gray-600">登録ユーザー数</p>
+            <p class="text-3xl font-bold text-gray-900">{stats.userCount}</p>
+          </div>
+          <div class="text-blue-500">
+            <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+              ></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-lg border-t-4 border-green-500 bg-white p-6 shadow-md">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="mb-1 text-sm font-medium text-gray-600">総投稿数</p>
+            <p class="text-3xl font-bold text-gray-900">{stats.postCount}</p>
+          </div>
+          <div class="text-green-500">
+            <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-lg border-t-4 border-purple-500 bg-white p-6 shadow-md">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="mb-1 text-sm font-medium text-gray-600">公開投稿数</p>
+            <p class="text-3xl font-bold text-gray-900">{stats.publishedCount}</p>
+          </div>
+          <div class="text-purple-500">
+            <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              ></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 機能紹介 -->
+    <div class="rounded-lg bg-white p-8 shadow-md">
+      <h2 class="mb-6 text-2xl font-bold text-gray-900">主な機能</h2>
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-md bg-blue-500 text-white"
+            >
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-lg font-medium text-gray-900">ユーザー管理</h3>
+            <p class="mt-2 text-gray-600">
+              ユーザーの作成、編集、削除が可能です。各ユーザーの投稿数も表示されます。
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-md bg-green-500 text-white"
+            >
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-lg font-medium text-gray-900">投稿管理</h3>
+            <p class="mt-2 text-gray-600">
+              投稿の作成、編集、削除、公開/下書き切り替えが可能です。
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-md bg-yellow-500 text-white"
+            >
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-lg font-medium text-gray-900">インライン編集</h3>
+            <p class="mt-2 text-gray-600">
+              編集ボタンをクリックすると、その場で内容を変更できます。
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-md bg-purple-500 text-white"
+            >
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <div class="ml-4">
+            <h3 class="text-lg font-medium text-gray-900">Prisma + PostgreSQL</h3>
+            <p class="mt-2 text-gray-600">
+              Prisma ORM と PostgreSQL を使用した高速なデータベース操作。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 border-t border-gray-200 pt-6">
+        <p class="text-gray-600">
+          このアプリケーションは <strong>Astro</strong>、<strong>TypeScript</strong>、<strong
+            >Tailwind CSS</strong
+          >、<strong>Prisma</strong>、<strong>PostgreSQL</strong> で構築されています。
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>

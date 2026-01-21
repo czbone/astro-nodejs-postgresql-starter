@@ -1,0 +1,24 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { prisma } from '@/lib/prisma'
+import UserForm from '@/components/UserForm'
+import UserList from '@/components/UserList'
+
+const users = await prisma.user.findMany({
+  include: {
+    posts: true
+  },
+  orderBy: {
+    createdAt: 'desc'
+  }
+})
+---
+
+<Layout title="ユーザー管理">
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <h1 class="mb-8 text-3xl font-bold">ユーザー管理</h1>
+
+    <UserForm client:load />
+    <UserList initialUsers={users} client:load />
+  </div>
+</Layout>

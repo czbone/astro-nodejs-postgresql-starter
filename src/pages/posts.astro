@@ -1,0 +1,31 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { prisma } from '@/lib/prisma'
+import PostForm from '@/components/PostForm'
+import PostList from '@/components/PostList'
+
+const [posts, users] = await Promise.all([
+  prisma.post.findMany({
+    include: {
+      author: true
+    },
+    orderBy: {
+      createdAt: 'desc'
+    }
+  }),
+  prisma.user.findMany({
+    orderBy: {
+      name: 'asc'
+    }
+  })
+])
+---
+
+<Layout title="投稿管理">
+  <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <h1 class="mb-8 text-3xl font-bold">投稿管理</h1>
+
+    <PostForm users={users} client:load />
+    <PostList initialPosts={posts} users={users} client:load />
+  </div>
+</Layout>

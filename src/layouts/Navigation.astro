@@ -1,0 +1,47 @@
+---
+const currentPath = Astro.url.pathname
+---
+
+<nav class="bg-gray-800 text-white">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <h1 class="text-xl font-bold">Astro + Prisma</h1>
+        </div>
+        <div class="ml-10 flex items-baseline space-x-4">
+          <a
+            href="/"
+            class={`px-3 py-2 rounded-md text-sm font-medium ${
+              currentPath === '/'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            ホーム
+          </a>
+          <a
+            href="/users"
+            class={`px-3 py-2 rounded-md text-sm font-medium ${
+              currentPath === '/users'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            ユーザー
+          </a>
+          <a
+            href="/posts"
+            class={`px-3 py-2 rounded-md text-sm font-medium ${
+              currentPath === '/posts'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+            }`}
+          >
+            投稿
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
