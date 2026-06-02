@@ -16,7 +16,7 @@ echo "⏳ Waiting for database connection..."
 max_attempts=30
 attempt=0
 
-until pnpm dlx prisma migrate status > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
+until pnpm prisma migrate status > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
     attempt=$((attempt + 1))
     echo "   Attempt $attempt/$max_attempts - Waiting for database..."
     sleep 2
@@ -31,7 +31,7 @@ echo "✅ Database connection established"
 
 # Prismaマイグレーションの実行
 echo "🔄 Running database migrations..."
-pnpm dlx prisma migrate deploy
+pnpm prisma migrate deploy
 
 if [ $? -eq 0 ]; then
     echo "✅ Migrations completed successfully"
