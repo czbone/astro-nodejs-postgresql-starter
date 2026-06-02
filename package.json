@@ -25,16 +25,16 @@
     "flowbite": "^4.0.2",
     "pg": "^8.21.0",
     "prisma": "^7.8.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.3.0",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
-    "@types/react": "^19.2.15",
-    "@typescript-eslint/parser": "^8.60.0",
+    "@types/react": "^19.2.16",
+    "@typescript-eslint/parser": "^8.60.1",
     "astro-eslint-parser": "^1.4.0",
     "eslint": "^10.4.1",
     "eslint-plugin-astro": "^1.7.0",
@@ -45,6 +45,6 @@
     "tailwindcss": "^4.3.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.60.0"
+    "typescript-eslint": "^8.60.1"
   }
 }
