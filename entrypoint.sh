@@ -16,7 +16,7 @@ echo "⏳ Waiting for database connection..."
 max_attempts=30
 attempt=0
 
-until pnpm exec prisma db execute --stdin <<< "SELECT 1" > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
+until pnpm exec prisma migrate status > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
     attempt=$((attempt + 1))
     echo "   Attempt $attempt/$max_attempts - Waiting for database..."
     sleep 2
