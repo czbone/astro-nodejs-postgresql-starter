@@ -13,6 +13,7 @@ echo "✅ DATABASE_URL is configured"
 
 # データベース接続の待機（オプション：PostgreSQLが起動するまで待つ）
 echo "⏳ Waiting for database connection..."
+echo "📍 Database URL: ${DATABASE_URL%%:*}://****" # パスワード部分をマスク
 max_attempts=30
 attempt=0
 
@@ -25,6 +26,7 @@ done
 if [ $attempt -eq $max_attempts ]; then
     echo "❌ Error: Could not connect to database after $max_attempts attempts"
     echo "📋 Detailed error information:"
+    echo "   DATABASE_URL is set: $([ -n "$DATABASE_URL" ] && echo 'Yes' || echo 'No')"
     pnpm prisma migrate status 2>&1
     exit 1
 fi
