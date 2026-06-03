@@ -63,6 +63,7 @@ COPY --from=build --chown=nodejs:nodejs /app/src/generated ./src/generated
 
 # Prismaスキーマとマイグレーションファイルをコピー（マイグレーション実行に必要）
 COPY --chown=nodejs:nodejs prisma ./prisma
+COPY --chown=nodejs:nodejs prisma.config.ts ./
 
 # 起動スクリプトをコピー
 COPY --chown=nodejs:nodejs entrypoint.sh ./
