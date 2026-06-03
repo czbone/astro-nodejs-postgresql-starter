@@ -1,6 +1,19 @@
 import { prisma } from '@/lib/prisma'
 import type { APIRoute } from 'astro'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+}
+
+export const OPTIONS: APIRoute = async () => {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders
+  })
+}
+
 export const GET: APIRoute = async ({ params }) => {
   try {
     const post = await prisma.post.findUnique({
@@ -11,18 +24,18 @@ export const GET: APIRoute = async ({ params }) => {
     if (!post) {
       return new Response(JSON.stringify({ error: 'Post not found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
 
     return new Response(JSON.stringify(post), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (error) {
     return new Response(JSON.stringify({ error: 'Failed to fetch post' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
 }
@@ -44,18 +57,18 @@ export const PATCH: APIRoute = async ({ request, params }) => {
 
     return new Response(JSON.stringify(post), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (error: any) {
     if (error.code === 'P2025') {
       return new Response(JSON.stringify({ error: 'Post not found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
     return new Response(JSON.stringify({ error: 'Failed to update post' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
 }
@@ -63,11 +76,11 @@ export const PATCH: APIRoute = async ({ request, params }) => {
 export const DELETE: APIRoute = async ({ params, request }) => {
   console.log('DELETE handler called for post:', params.id)
   console.log('Request method:', request.method)
-  
+
   try {
     const postId = parseInt(params.id!)
     console.log('Attempting to delete post with ID:', postId)
-    
+
     await prisma.post.delete({
       where: { id: postId }
     })
@@ -75,19 +88,22 @@ export const DELETE: APIRoute = async ({ params, request }) => {
     console.log('Post deleted successfully:', postId)
     return new Response(JSON.stringify({ message: 'Post deleted successfully' }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (error: any) {
     console.error('Delete error:', error)
     if (error.code === 'P2025') {
       return new Response(JSON.stringify({ error: 'Post not found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
     }
-    return new Response(JSON.stringify({ error: 'Failed to delete post', details: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({ error: 'Failed to delete post', details: error.message }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    )
   }
 }
