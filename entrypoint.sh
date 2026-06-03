@@ -17,7 +17,7 @@ echo "📍 Database URL: ${DATABASE_URL%%:*}://****" # パスワード部分を�
 max_attempts=30
 attempt=0
 
-until pnpm prisma migrate status 2>&1 || [ $attempt -eq $max_attempts ]; do
+until pnpm prisma db execute --stdin <<< "SELECT 1;" > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
     attempt=$((attempt + 1))
     echo "   Attempt $attempt/$max_attempts - Waiting for database..."
     if [ $attempt -lt $max_attempts ]; then
@@ -29,7 +29,7 @@ if [ $attempt -eq $max_attempts ]; then
     echo "❌ Error: Could not connect to database after $max_attempts attempts"
     echo "📋 Detailed error information:"
     echo "   DATABASE_URL is set: $([ -n "$DATABASE_URL" ] && echo 'Yes' || echo 'No')"
-    pnpm prisma migrate status 2>&1
+    pnpm prisma db execute --stdin <<< "SELECT 1;" 2>&1
     exit 1
 fi
 
