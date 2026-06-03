@@ -9,17 +9,17 @@ if [ -z "$DATABASE_URL" ]; then
     exit 1
 fi
 
-echo "✅ DATABASE_URL is configured"
-
 # データベース接続の待機（オプション：PostgreSQLが起動するまで待つ）
 echo "⏳ Waiting for database connection..."
-echo "📍 Database URL: ${DATABASE_URL%%:*}://****" # パスワード部分をマスク
 max_attempts=30
 attempt=0
 
 until pnpm prisma db execute --stdin <<< "SELECT 1;" > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
     attempt=$((attempt + 1))
-    echo "   Attempt $attempt/$max_attempts - Waiting for database..."
+    # 5回おきまたは最終試行でログ出力
+    if [ $((attempt % 5)) -eq 0 ] || [ $attempt -eq $max_attempts ]; then
+        echo "   Attempt $attempt/$max_attempts..."
+    fi
     if [ $attempt -lt $max_attempts ]; then
         sleep 2
     fi
@@ -33,29 +33,30 @@ if [ $attempt -eq $max_attempts ]; then
     exit 1
 fi
 
-echo "✅ Database connection established"
+echo "✅ Database connected"
 
 # Prismaマイグレーションの実行
-echo "🔄 Running database migrations..."
-pnpm prisma migrate deploy
+echo "🔄 Running migrations..."
+pnpm prisma migrate deploy > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo "✅ Migrations completed successfully"
+    echo "✅ Migrations completed"
 else
-    echo "❌ Error: Migration failed"
+    echo "❌ Migration failed"
+    pnpm prisma migrate deploy 2>&1
     exit 1
 fi
 
 # オプション：初回デプロイ時のシード実行
 # 環境変数 RUN_SEED=true を設定すると実行される
 if [ "$RUN_SEED" = "true" ]; then
-    echo "🌱 Running database seed..."
-    pnpm run db:seed
+    echo "🌱 Running seed..."
+    pnpm run db:seed > /dev/null 2>&1
     
     if [ $? -eq 0 ]; then
-        echo "✅ Seed completed successfully"
+        echo "✅ Seed completed"
     else
-        echo "⚠️  Warning: Seed failed (continuing anyway)"
+        echo "⚠️  Seed failed (continuing)"
     fi
 fi
 
