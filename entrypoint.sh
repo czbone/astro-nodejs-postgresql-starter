@@ -24,6 +24,8 @@ done
 
 if [ $attempt -eq $max_attempts ]; then
     echo "❌ Error: Could not connect to database after $max_attempts attempts"
+    echo "📋 Detailed error information:"
+    pnpm prisma migrate status 2>&1
     exit 1
 fi
 
