@@ -16,7 +16,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 # 本番依存関係のインストール
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile --omit=dev
 
 # ビルドステージ
 FROM base AS build
