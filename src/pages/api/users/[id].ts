@@ -64,25 +64,33 @@ export const PATCH: APIRoute = async ({ request, params }) => {
   }
 }
 
-export const DELETE: APIRoute = async ({ params }) => {
+export const DELETE: APIRoute = async ({ params, request }) => {
+  console.log('DELETE handler called for user:', params.id)
+  console.log('Request method:', request.method)
+  
   try {
+    const userId = parseInt(params.id!)
+    console.log('Attempting to delete user with ID:', userId)
+    
     // カスケード削除により、関連する投稿も自動的に削除されます
     await prisma.user.delete({
-      where: { id: parseInt(params.id!) }
+      where: { id: userId }
     })
 
+    console.log('User deleted successfully:', userId)
     return new Response(JSON.stringify({ message: 'User deleted successfully' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     })
   } catch (error: any) {
+    console.error('Delete error:', error)
     if (error.code === 'P2025') {
       return new Response(JSON.stringify({ error: 'User not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
       })
     }
-    return new Response(JSON.stringify({ error: 'Failed to delete user' }), {
+    return new Response(JSON.stringify({ error: 'Failed to delete user', details: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     })

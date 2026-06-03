@@ -60,24 +60,32 @@ export const PATCH: APIRoute = async ({ request, params }) => {
   }
 }
 
-export const DELETE: APIRoute = async ({ params }) => {
+export const DELETE: APIRoute = async ({ params, request }) => {
+  console.log('DELETE handler called for post:', params.id)
+  console.log('Request method:', request.method)
+  
   try {
+    const postId = parseInt(params.id!)
+    console.log('Attempting to delete post with ID:', postId)
+    
     await prisma.post.delete({
-      where: { id: parseInt(params.id!) }
+      where: { id: postId }
     })
 
+    console.log('Post deleted successfully:', postId)
     return new Response(JSON.stringify({ message: 'Post deleted successfully' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     })
   } catch (error: any) {
+    console.error('Delete error:', error)
     if (error.code === 'P2025') {
       return new Response(JSON.stringify({ error: 'Post not found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' }
       })
     }
-    return new Response(JSON.stringify({ error: 'Failed to delete post' }), {
+    return new Response(JSON.stringify({ error: 'Failed to delete post', details: error.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     })
