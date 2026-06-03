@@ -17,10 +17,12 @@ echo "📍 Database URL: ${DATABASE_URL%%:*}://****" # パスワード部分を�
 max_attempts=30
 attempt=0
 
-until pnpm prisma migrate status > /dev/null 2>&1 || [ $attempt -eq $max_attempts ]; do
+until pnpm prisma migrate status 2>&1 || [ $attempt -eq $max_attempts ]; do
     attempt=$((attempt + 1))
     echo "   Attempt $attempt/$max_attempts - Waiting for database..."
-    sleep 2
+    if [ $attempt -lt $max_attempts ]; then
+        sleep 2
+    fi
 done
 
 if [ $attempt -eq $max_attempts ]; then
