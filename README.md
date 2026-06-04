@@ -170,6 +170,38 @@ pnpm start
 DATABASE_URL="postgresql://username:password@production-host:5432/database_name"
 ```
 
+### Dockerfile と entrypoint.sh の役割
+
+このリポジトリには、Coolify などのコンテナ環境でそのまま使える [Dockerfile](Dockerfile) と [entrypoint.sh](entrypoint.sh) が含まれています。
+
+`Dockerfile` はマルチステージビルド構成です。
+
+- `dependencies` ステージで本番依存関係だけをインストールします。
+- `build` ステージで開発依存関係を含めてインストールし、`pnpm run db:generate` で Prisma Client を生成したあとに `pnpm run build` を実行します。
+- `production` ステージには、実行に必要な `node_modules`、ビルド済みの `dist`、実行時に参照する `src/generated`、`prisma` ディレクトリ、`prisma.config.ts`、`entrypoint.sh` だけをコピーします。
+- 本番イメージは非 root ユーザー `nodejs` で動作し、`HEALTHCHECK` で `/` への HTTP アクセスを監視します。
+- コンテナ起動時は `ENTRYPOINT ["./entrypoint.sh"]` により、Node.js サーバーを直接起動する前に初期化処理を挟みます。
+
+`entrypoint.sh` は、コンテナ起動時に次の順序で処理を行います。
+
+1. `DATABASE_URL` が設定されているか確認します。
+2. `pnpm prisma db execute --stdin <<< "SELECT 1;"` を使ってデータベース接続を確認し、最大 30 回までリトライします。
+3. 接続できたら `pnpm prisma migrate deploy` を実行し、本番用マイグレーションを適用します。
+4. `RUN_SEED=true` が設定されている場合だけ `pnpm run db:seed` を実行します。
+5. 最後に `node dist/server/entry.mjs` を起動して Astro の本番サーバーを立ち上げます。
+
+開発環境で使う `pnpm db:migrate` は `prisma migrate dev` を呼び出しますが、コンテナ起動時は [entrypoint.sh](entrypoint.sh) から `prisma migrate deploy` を使って既存マイグレーションだけを安全に適用します。
+
+Docker 運用で最低限必要な環境変数は次の 2 つです。
+
+```env
+DATABASE_URL="postgresql://username:password@production-host:5432/database_name"
+RUN_SEED="false"
+```
+
+- `DATABASE_URL`: Prisma と起動スクリプトの両方が参照する必須値です。
+- `RUN_SEED`: 任意です。初回デプロイ時などにだけ `true` を設定してください。
+
 ### ポート設定
 
 デフォルトでは`http://localhost:3000`でサーバーが起動します。ポートを変更する場合は、`astro.config.mjs`の`server`セクションで設定を変更してください：
