@@ -13,6 +13,9 @@ export default defineConfig({
     port: 3000, // 使用したいポート番号に変更
     host: true // 外部からのアクセスを許可する場合
   },
+  security: {
+    checkOrigin: false
+  },
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()]
