@@ -76,6 +76,9 @@ export const PATCH: APIRoute = async ({ request, params }) => {
 export const DELETE: APIRoute = async ({ params, request }) => {
   console.log('DELETE handler called for post:', params.id)
   console.log('Request method:', request.method)
+  console.log(request.headers.get('origin'))
+  console.log(request.headers.get('host'))
+  console.log(request.headers.get('x-forwarded-host'))
 
   try {
     const postId = parseInt(params.id!)
