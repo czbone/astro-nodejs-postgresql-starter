@@ -20,7 +20,7 @@
     "@astrojs/react": "^5.0.7",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
-    "astro": "^6.4.3",
+    "astro": "^6.4.4",
     "dotenv": "^17.4.2",
     "flowbite": "^4.0.2",
     "pg": "^8.21.0",
