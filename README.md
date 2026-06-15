@@ -215,6 +215,59 @@ export default defineConfig({
 })
 ```
 
+### docker-compose.yaml（Coolify 統合）
+
+本プロジェクトの [docker-compose.yaml](docker-compose.yaml) は Coolify でのデプロイを想定した設定になっています。
+
+```yaml
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - coolify
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    environment:
+      - PORT=${PORT:-3000}
+networks:
+  coolify:
+    external: true
+```
+
+**設定の詳細：**
+
+- **networks**: `coolify` 外部ネットワークに接続し、Coolify 上の他のリソース（PostgreSQL など）と通信可能にします。
+- **ports**: `${PORT:-3000}:${PORT:-3000}` で、環境変数 `PORT` によりポートを可変にします。
+  - 環境変数 `PORT=8080` が設定されている場合、ホストとコンテナ両方でポート 8080 で動作します
+  - 指定されない場合はデフォルト 3000 が使われます
+- **environment**: `PORT=${PORT:-3000}` により、Coolify からの `PORT` 環境変数が Astro アプリケーションに渡されます。
+
+**Coolify での使用方法：**
+
+1. PostgreSQL リソースを別途作成し、接続文字列を控えておきます
+2. 本アプリケーションをデプロイする際、以下の環境変数を設定します：
+   ```
+   DATABASE_URL=postgresql://username:password@postgres-service:5432/database_name
+   PORT=3000  # 任意のポート番号に変更可能
+   ```
+3. Docker Compose ファイル（本ファイル）を使用して、Coolify で起動します
+
+**必要な環境変数：**
+
+Docker 運用で最低限必要な環境変数は次の 3 つです。
+
+```env
+DATABASE_URL="postgresql://username:password@production-host:5432/database_name"
+PORT="3000"
+RUN_SEED="false"
+```
+
+- `DATABASE_URL`: Prisma と起動スクリプトの両方が参照する必須値です。
+- `PORT`: Coolify のポート設定に応じて指定してください。省略時はデフォルト 3000 です。
+- `RUN_SEED`: 任意です。初回デプロイ時などにだけ `true` を設定してください。
+
 ### Prisma設定
 
 本番環境でも開発環境と同様に、デプロイ前に以下のコマンドを実行してください：
