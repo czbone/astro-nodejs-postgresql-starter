@@ -6,9 +6,9 @@ services:
     networks:
       - coolify
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT:-3000}:${PORT:-3000}"
     environment:
-      - PORT=3000
+      - PORT=${PORT:-3000}
 networks:
   coolify:
     external: true
