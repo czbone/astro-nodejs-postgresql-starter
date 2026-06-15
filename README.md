@@ -38,7 +38,7 @@ Astro 5 (SSR)、Prisma 7、PostgreSQL、React、Tailwind CSS 4を組み合わせ
 git clone [リポジトリのURL]
 
 # プロジェクトディレクトリに移動
-cd astro-tailwind4-flowbite-db-starter-ex
+cd astro-nodejs-postgresql-starter
 
 # 依存関係のインストール
 pnpm install
