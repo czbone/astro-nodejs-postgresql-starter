@@ -3,3 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+networks:
+  coolify:
+    external: true
