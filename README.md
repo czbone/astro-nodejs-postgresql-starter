@@ -4,7 +4,7 @@ Astro 5 (SSR)、Prisma 7、PostgreSQL、React、Tailwind CSS 4を組み合わせ
 
 ## 画面イメージ
 
-![画面イメージ](https://github.com/user-attachments/assets/ccbed749-1666-4144-ac21-1197cae7d797)
+![画面イメージ](https://github.com/user-attachments/assets/cb8fe752-9d9b-49eb-bbbc-9b03ffe8fde0)
 
 ## 技術スタック
 
